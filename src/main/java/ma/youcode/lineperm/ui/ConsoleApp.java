@@ -2,6 +2,10 @@ package ma.youcode.lineperm.ui;
 
 public class ConsoleApp{
 
+    ConsoleApp(){
+        LoadApp();
+    }
+
     public void LoadApp(){
         System.out.println("==============================");
         System.out.println("LinePermission: gestion des fichiers et permissions");
