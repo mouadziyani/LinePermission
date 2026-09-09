@@ -1,57 +1,53 @@
 package ma.youcode.lineperm.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import ma.youcode.lineperm.model.Users;
 
 public class AuthService {
 
-    HashMap<String , Users> users;
-    private UserService userService;
-    public Users currentUser ;
+    public static boolean isAuth = false ;
 
-    public AuthService(){
-        users = new HashMap<>();
-        currentUser = null ;
-        userService = new UserService();
-    }
+    public void login(String username, String password) {
 
-    public boolean login(String username, String password) {
+        if(UserService.users.containsKey(username)){
+            if(!BCrypt.checkpw(password, UserService.users.get(password))){
+                System.out.println("password incorrect");
+            }
 
-        Users user = users.get(username);
+            isAuth = true ;
 
-        if (user == null) {
-            return false;
+            System.out.println(isAuth);
+        }else{
+            System.out.println("username not found");
         }
-
-        if (!user.getPasswordHash().equals(password)) {
-            return false;
-        }
-
-        currentUser = user;
-
-        return true;
-    }
-
-    public boolean signup(String username , String password){
-
-        if (users.containsKey(username)){
-            return false ;
-        }
-
-        Users newUser = new Users(username, password) ;
-        users.put(username, newUser);
-        return true ;
 
     }
 
-    public boolean logout() {
+    public void signup(String username , String password) throws Exception{
 
-        if (currentUser == null) {
-            return false;
+        if(UserService.users.containsKey(username)){
+            System.out.println("username deja existe");
         }
-        currentUser = null;
-        return true;
+
+        try {
+            
+            Path userPath = Path.of("src/main/resources/users.txt");
+            
+            String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+            String creatUser = username + " : " + passwordHash ; 
+            UserService.users.put(creatUser, passwordHash);
+
+            Files.writeString(userPath, creatUser + System.lineSeparator() , StandardOpenOption.APPEND);
+
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
     }
 
 }
