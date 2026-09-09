@@ -5,12 +5,13 @@ import ma.youcode.lineperm.service.AuthService;
 
 public class ConsoleApp {
 
-    public void LoadApp() {
+    public void LoadApp() throws Exception {
 
         AuthService service = new AuthService();
 
         String choixDeUser;
         String choix = "";
+        String currentUsername = null;
 
         Scanner scanner = new Scanner(System.in);
 
@@ -21,34 +22,40 @@ public class ConsoleApp {
 
         do {
 
-            System.out.print("lineperm> ");
+            if (AuthService.isAuth && currentUsername != null) {
+                System.out.print(currentUsername + "@lineperm> ");
+            } else {
+                System.out.print("lineperm> ");
+            }
 
             choixDeUser = scanner.nextLine();
-
             choix = choixDeUser.trim().toLowerCase();
 
             switch (choix) {
 
                 case "signup":
 
+                    if (AuthService.isAuth) {
+                        System.out.println("Vous etes deja connecte");
+                        break;
+                    }
+
                     System.out.println(" ===================== SIGN UP ===================== ");
                     System.out.print("Username : ");
-                    String username = scanner.nextLine();
+                    String username = scanner.nextLine().trim();
 
                     System.out.print("Password : ");
                     String password = scanner.nextLine();
 
-                    boolean signupResult = service.signup(username, password);
-
-                    if (signupResult) {
-                        System.out.println("Compte cree");
-                    } else {
-                        System.out.println("Username utilise");
-                    }
-
+                    service.signup(username, password);
                     break;
 
                 case "login":
+
+                    if (AuthService.isAuth) {
+                        System.out.println("Vous etes deja connecte");
+                        break;
+                    }
                     
                     System.out.println(" ===================== Login ===================== ");
                     System.out.print("Username : ");
@@ -57,24 +64,27 @@ public class ConsoleApp {
                     System.out.print("Password : ");
                     String loginPpassword = scanner.nextLine();
 
-                    boolean loginResult = service.login(loginUsername, loginPpassword);
-                    if (loginResult) {
-                        System.out.println("connexion");
-                    } else {
-                        System.out.println("Error !");
+                    service.login(loginUsername, loginPpassword);
+
+                    if(AuthService.isAuth) {
+                        currentUsername = loginUsername ;
+                        System.out.println("connect");
                     }
                 
                 break;
 
                 case "logout":
                 
-                    boolean logoutResult = service.logout();
+                        if(AuthService.isAuth){
 
-                    if (logoutResult) {
-                        System.out.println("deconnexion");
-                    } else {
-                        System.out.println("Personne n'est connectee");
-                    }
+                            AuthService.isAuth = false ;
+                            currentUsername = null ;
+
+                            System.out.println("deconect");
+
+                        }else{
+                            System.out.println("not conncted");
+                        }
                             
                 break;
 
