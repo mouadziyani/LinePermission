@@ -4,7 +4,7 @@ import ma.youcode.lineperm.ui.ConsoleApp;
 
 public class Main{
 	
-	public static void main (String[] args){
+	public static void main (String[] args) throws Exception{
 		ConsoleApp start = new ConsoleApp();
 		start.LoadApp();
 	}
