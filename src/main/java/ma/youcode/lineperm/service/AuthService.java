@@ -3,41 +3,48 @@ package ma.youcode.lineperm.service;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import ma.youcode.lineperm.model.Users;
 
-public class AuthService {
+public class AuthService{
+
+    public AuthService(){
+        new UserService();
+    }
+
 
     public static boolean isAuth = false ;
-
+    Path userPath = Path.of("src/main/resources/users.txt");   
+    
+    
     public void login(String username, String password) {
 
-        if(UserService.users.containsKey(username)){
-            if(!BCrypt.checkpw(password, UserService.users.get(password))){
+        if (UserService.users.containsKey(username)) {
+
+            String passwordHash = UserService.users.get(username);
+
+            if (!BCrypt.checkpw(password, passwordHash)) {
                 System.out.println("password incorrect");
+                return;
             }
 
-            isAuth = true ;
+            isAuth = true;
+            System.out.println("connect");
 
-            System.out.println(isAuth);
-        }else{
+        } else {
             System.out.println("username not found");
         }
-
     }
 
     public void signup(String username , String password) throws Exception{
 
         if(UserService.users.containsKey(username)){
             System.out.println("username deja existe");
+            return ;
         }
 
         try {
-            
-            Path userPath = Path.of("src/main/resources/users.txt");
             
             String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
             String creatUser = username + " : " + passwordHash ; 
@@ -49,5 +56,8 @@ public class AuthService {
             throw new Exception("Error");
         }
     }
+
+
+    
 
 }
