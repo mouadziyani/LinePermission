@@ -33,8 +33,8 @@ public class UserService{
 
             if (listeSplit.length == 2) {
 
-                String username = listeSplit[0];
-                String passwordHash = listeSplit[1];
+                String username = listeSplit[0].trim();
+                String passwordHash = listeSplit[1].trim();
 
                 users.put(username,passwordHash);
             }
